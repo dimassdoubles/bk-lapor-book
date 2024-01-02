@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lapor_book/components/styles.dart';
 import 'package:lapor_book/models/akun.dart';
+import 'package:lapor_book/pages/dashboard/ProfilePage.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -74,12 +75,28 @@ class _DashboardFull extends State<DashboardFull> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    getAkun();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final pages = <Widget>[
+      Text("All Laporan"),
+      Text("Laporan akun"),
+      Profile(akun: akun),
+    ];
+
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
         child: Icon(Icons.add, size: 35),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/add', arguments: {
+            'akun': akun,
+          });
+        },
       ),
       appBar: AppBar(
         backgroundColor: primaryColor,
@@ -93,6 +110,11 @@ class _DashboardFull extends State<DashboardFull> {
         selectedItemColor: Colors.white,
         selectedFontSize: 16,
         unselectedItemColor: Colors.grey[800],
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_outlined),
@@ -112,7 +134,7 @@ class _DashboardFull extends State<DashboardFull> {
           ? const Center(
               child: CircularProgressIndicator(),
             )
-          : Text('Masih kosong, diisi nanti'),
+          : pages.elementAt(_selectedIndex),
     );
   }
 }

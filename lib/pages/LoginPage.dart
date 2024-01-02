@@ -32,6 +32,7 @@ class LoginPageState extends State<LoginPage> {
           context, '/dashboard', ModalRoute.withName('/dashboard'));
     } catch (e) {
       final snackbar = SnackBar(content: Text(e.toString()));
+      debugPrint(e.toString());
       ScaffoldMessenger.of(context).showSnackBar(snackbar);
     } finally {
       setState(() {
