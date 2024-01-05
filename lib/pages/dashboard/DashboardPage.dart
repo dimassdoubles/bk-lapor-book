@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lapor_book/components/styles.dart';
 import 'package:lapor_book/models/akun.dart';
+import 'package:lapor_book/pages/dashboard/AllLaporan.dart';
+import 'package:lapor_book/pages/dashboard/MyLaporan.dart';
 import 'package:lapor_book/pages/dashboard/ProfilePage.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -83,15 +85,15 @@ class _DashboardFull extends State<DashboardFull> {
   @override
   Widget build(BuildContext context) {
     final pages = <Widget>[
-      Text("All Laporan"),
-      Text("Laporan akun"),
+      AllLaporan(akun: akun),
+      MyLaporan(akun: akun),
       Profile(akun: akun),
     ];
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         backgroundColor: primaryColor,
-        child: Icon(Icons.add, size: 35),
+        child: const Icon(Icons.add, size: 35),
         onPressed: () {
           Navigator.pushNamed(context, '/add', arguments: {
             'akun': akun,

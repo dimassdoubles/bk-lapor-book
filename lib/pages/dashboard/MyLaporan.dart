@@ -1,66 +1,62 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lapor_book/components/list_item.dart';
 import 'package:lapor_book/models/akun.dart';
 import 'package:lapor_book/models/laporan.dart';
 
-class AllLaporan extends StatefulWidget {
+class MyLaporan extends StatefulWidget {
   final Akun akun;
-  AllLaporan({super.key, required this.akun});
+  MyLaporan({super.key, required this.akun});
 
   @override
-  State<AllLaporan> createState() => _AllLaporanState();
+  State<MyLaporan> createState() => _MyLaporanState();
 }
 
-class _AllLaporanState extends State<AllLaporan> {
+class _MyLaporanState extends State<MyLaporan> {
   final _firestore = FirebaseFirestore.instance;
+  final _auth = FirebaseAuth.instance;
 
   List<Laporan> listLaporan = [];
 
   void getTransaksi() async {
     try {
-      QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await _firestore.collection('laporan').get();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('laporan')
+          .where('uid',
+              isEqualTo: _auth.currentUser!
+                  .uid) // kondisi untuk menccari laporan yang sesuai dengan akun yang telah login
+          .get();
 
       setState(() {
         listLaporan.clear();
         for (var documents in querySnapshot.docs) {
-          // List<dynamic>? komentarData = documents.data()['komentar'];
+          List<dynamic>? komentarData = documents.data()['komentar'];
 
-          // List<Komentar>? listKomentar = komentarData?.map((map) {
-          //   return Komentar(
-          //     nama: map['nama'],
-          //     isi: map['isi'],
-          //   );
-          // }).toList();
-
-          debugPrint("sampai sini bray");
-          debugPrint("${documents.data()}");
-
+          List<Komentar>? listKomentar = komentarData?.map((map) {
+            return Komentar(
+              nama: map['nama'],
+              isi: map['isi'],
+            );
+          }).toList();
           listLaporan.add(
             Laporan(
-              // komentar: listKomentar,
-              deskripsi: documents.data()['deskripsi'] ?? "",
-              docId: documents.data()['docId'] ?? "",
-              gambar: documents.data()['gambar'] ?? "",
-              instansi: documents.data()['instansi'] ?? "",
-              judul: documents.data()['judul'] ?? "",
-              maps: documents.data()['maps'] ?? "",
-              nama: documents.data()['nama'] ?? "",
-              status: documents.data()['status'] ?? "",
+              uid: documents.data()['uid'],
+              docId: documents.data()['docId'],
+              judul: documents.data()['judul'],
+              instansi: documents.data()['instansi'],
+              deskripsi: documents.data()['deskripsi'],
+              nama: documents.data()['nama'],
+              status: documents.data()['status'],
+              gambar: documents.data()['gambar'],
               tanggal: documents['tanggal'].toDate(),
-              uid: "", // documents.data()['uid'],
+              maps: documents.data()['maps'],
+              komentar: listKomentar,
             ),
           );
-
-          debugPrint("sampai sini gan");
         }
       });
     } catch (e) {
-      debugPrint("sampai sini broo");
-      final snackbar = SnackBar(content: Text(e.toString()));
-      debugPrint("sampai sini lagi");
-      ScaffoldMessenger.of(context).showSnackBar(snackbar);
       print(e);
     }
   }

@@ -38,34 +38,72 @@ class _ListItemState extends State<ListItem> {
     }
   }
 
-    @override
-    Widget build(BuildContext context) {
-      return Container(
-        decoration: BoxDecoration(
-            border: Border.all(width: 2),
-            borderRadius: BorderRadius.circular(10)),
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+          border: Border.all(width: 2),
+          borderRadius: BorderRadius.circular(10)),
+      child: InkWell(
+        onTap: () {
+          Navigator.pushNamed(context, '/detail', arguments: {
+            'laporan': widget.laporan,
+            'akun': widget.akun,
+          });
+        },
+        onLongPress: () {
+          if (widget.isLaporanku) {
+            showDialog(
+                context: context,
+                builder: (BuildContext) {
+                  return AlertDialog(
+                    title: Text('Delete ${widget.laporan.judul}?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Batal'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          deleteLaporan();
+                        },
+                        child: Text('Hapus'),
+                      ),
+                    ],
+                  );
+                });
+          }
+        },
         child: Column(
           children: [
-            widget.laporan.gambar != ''
-                ? Image.network(
-                    widget.laporan.gambar!,
-                    width: 130,
-                    height: 130,
-                  )
-                : Image.asset(
-                    'assets/istock-default.jpg',
-                    width: 130,
-                    height: 130,
-                  ),
+            Expanded(
+              child: widget.laporan.gambar != ''
+                  ? Image.network(
+                      widget.laporan.gambar!,
+                    )
+                  : Image.asset(
+                      'assets/istock-default.jpg',
+                      // height: 130,
+                    ),
+            ),
             Container(
               width: double.infinity,
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(vertical: 10),
               decoration: const BoxDecoration(
-                  border: Border.symmetric(horizontal: BorderSide(width: 2))),
+                border: Border.symmetric(
+                  horizontal: BorderSide(
+                    width: 2,
+                  ),
+                ),
+              ),
               child: Text(
                 widget.laporan.judul,
-                style: headerStyle(level: 4),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             Row(
@@ -83,7 +121,10 @@ class _ListItemState extends State<ListItem> {
                     alignment: Alignment.center,
                     child: Text(
                       widget.laporan.status,
-                      style: headerStyle(level: 5, dark: false),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -99,7 +140,11 @@ class _ListItemState extends State<ListItem> {
                     alignment: Alignment.center,
                     child: Text(
                       DateFormat('dd/MM/yyyy').format(widget.laporan.tanggal),
-                      style: headerStyle(level: 5, dark: false),
+                      maxLines: 1,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 )
@@ -107,6 +152,7 @@ class _ListItemState extends State<ListItem> {
             )
           ],
         ),
-      );
-    }
+      ),
+    );
+  }
 }
