@@ -76,9 +76,10 @@ class AddFormState extends State<AddFormPage> {
     }
   }
 
-  Image imagePreview() {
+  Widget imagePreview() {
     if (file == null) {
-      return Image.asset('assets/istock-default.jpg', width: 180, height: 180);
+      return const SizedBox.shrink();
+      // return Image.asset('assets/istock-default.jpg', width: 180, height: 180);
     } else {
       return Image.file(File(file!.path), width: 180, height: 180);
     }
