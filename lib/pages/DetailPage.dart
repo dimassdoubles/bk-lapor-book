@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lapor_book/components/like_button.dart';
 import 'package:lapor_book/components/status_dialog.dart';
 import 'package:lapor_book/components/styles.dart';
 import 'package:lapor_book/models/akun.dart';
@@ -69,26 +70,6 @@ class _DetailPageState extends State<DetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      if (akun.role == 'admin')
-                        Container(
-                          width: 250,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                status = laporan.status;
-                              });
-                              statusDialog(laporan);
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: primaryColor,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Text('Ubah Status'),
-                          ),
-                        ),
                       Text(
                         laporan.judul,
                         style: headerStyle(level: 3),
@@ -113,6 +94,30 @@ class _DetailPageState extends State<DetailPage> {
                               laporan.instansi, Colors.white, Colors.black),
                         ],
                       ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      LikeButton(laporan: laporan),
+                      if (akun.role == 'admin')
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                status = laporan.status;
+                              });
+                              statusDialog(laporan);
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.white,
+                              backgroundColor: primaryColor,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: Text('Ubah Status'),
+                          ),
+                        ),
                       const SizedBox(height: 20),
                       ListTile(
                         leading: Icon(Icons.person),
