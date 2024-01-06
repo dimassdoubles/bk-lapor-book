@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:lapor_book/components/styles.dart';
+import 'package:lapor_book/laporan_utils.dart';
 import 'package:lapor_book/models/akun.dart';
 import 'package:lapor_book/models/laporan.dart';
 
@@ -10,7 +10,7 @@ class ListItem extends StatefulWidget {
   final Laporan laporan;
   final Akun akun;
   final bool isLaporanku;
-  ListItem(
+  const ListItem(
       {super.key,
       required this.laporan,
       required this.akun,
@@ -32,9 +32,10 @@ class _ListItemState extends State<ListItem> {
       if (widget.laporan.gambar != '') {
         await _storage.refFromURL(widget.laporan.gambar!).delete();
       }
+      // ignore: use_build_context_synchronously
       Navigator.popAndPushNamed(context, '/dashboard');
     } catch (e) {
-      print(e);
+      debugPrint("$e");
     }
   }
 
@@ -55,7 +56,7 @@ class _ListItemState extends State<ListItem> {
           if (widget.isLaporanku) {
             showDialog(
                 context: context,
-                builder: (BuildContext) {
+                builder: (context) {
                   return AlertDialog(
                     title: Text('Delete ${widget.laporan.judul}?'),
                     actions: [
@@ -63,13 +64,13 @@ class _ListItemState extends State<ListItem> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: Text('Batal'),
+                        child: const Text('Batal'),
                       ),
                       TextButton(
                         onPressed: () {
                           deleteLaporan();
                         },
-                        child: Text('Hapus'),
+                        child: const Text('Hapus'),
                       ),
                     ],
                   );
@@ -138,14 +139,35 @@ class _ListItemState extends State<ListItem> {
                         border: const Border.symmetric(
                             vertical: BorderSide(width: 1))),
                     alignment: Alignment.center,
-                    child: Text(
-                      DateFormat('dd/MM/yyyy').format(widget.laporan.tanggal),
-                      maxLines: 1,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    child: FutureBuilder(
+                      initialData: 0,
+                      future: LaporanUtils.countLike(widget.laporan.docId),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(
+                            "${snapshot.data} likes",
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          );
+                        }
+
+                        return const Text(
+                          "Loading...",
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        );
+                      },
                     ),
+                    // child: Text(
+                    //   DateFormat('dd/MM/yyyy').format(widget.laporan.tanggal),
+                    //   maxLines: 1,
+                    //   style: const TextStyle(
+                    //     color: Colors.white,
+                    //     fontWeight: FontWeight.w600,
+                    //   ),
+                    // ),
                   ),
                 )
               ],
