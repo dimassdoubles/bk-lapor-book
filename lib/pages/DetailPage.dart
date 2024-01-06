@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lapor_book/components/like_button.dart';
+import 'package:lapor_book/components/like_counter.dart';
 import 'package:lapor_book/components/status_dialog.dart';
 import 'package:lapor_book/components/styles.dart';
 import 'package:lapor_book/models/akun.dart';
@@ -15,6 +17,26 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   bool _isLoading = false;
+  int likes = 0;
+
+  final _firestore = FirebaseFirestore.instance;
+
+  void countLike(String laporanId) async {
+    debugPrint("count like");
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection("likes")
+          .where('laporanId', isEqualTo: laporanId)
+          .get();
+
+      setState(() {
+        likes = querySnapshot.docs.length;
+      });
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
+  }
 
   Future launch(String uri) async {
     if (uri == '') return;
@@ -49,6 +71,7 @@ class _DetailPageState extends State<DetailPage> {
 
     Laporan laporan = arguments['laporan'];
     Akun akun = arguments['akun'];
+    countLike(laporan.docId);
 
     return Scaffold(
       appBar: AppBar(
@@ -97,6 +120,7 @@ class _DetailPageState extends State<DetailPage> {
                       const SizedBox(
                         height: 20,
                       ),
+                      LikeCounter(qty: likes),
                       LikeButton(laporan: laporan),
                       if (akun.role == 'admin')
                         SizedBox(

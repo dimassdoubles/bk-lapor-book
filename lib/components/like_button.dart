@@ -5,7 +5,13 @@ import 'package:lapor_book/models/laporan.dart';
 
 class LikeButton extends StatefulWidget {
   final Laporan _laporan;
-  const LikeButton({super.key, required Laporan laporan}) : _laporan = laporan;
+  final void Function(int newLikeCount)? _onLikeRefresh;
+  const LikeButton({
+    super.key,
+    required Laporan laporan,
+    void Function(int newLikeCount)? onLikeRefresh,
+  })  : _laporan = laporan,
+        _onLikeRefresh = onLikeRefresh;
 
   @override
   State<LikeButton> createState() => _LikeButtonState();
@@ -46,6 +52,21 @@ class _LikeButtonState extends State<LikeButton> {
     // jika ditemukan like yang sesuai ubah liked => true
   }
 
+  Future<int> countLike() async {
+    debugPrint("count like");
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection(colletionName)
+          .where('laporanId', isEqualTo: widget._laporan.docId)
+          .get();
+
+      return querySnapshot.docs.length;
+    } catch (e) {
+      debugPrint("$e");
+      rethrow;
+    }
+  }
+
   void like() async {
     setState(() {
       isLoading = true;
@@ -67,9 +88,13 @@ class _LikeButtonState extends State<LikeButton> {
       });
 
       // hilangkan tombol like
-      // setState(() {
-      //   liked = true;
-      // });
+      setState(() {
+        liked = true;
+      });
+
+      int likes = await countLike();
+
+      widget._onLikeRefresh?.call(likes);
     } catch (e) {
       final snackbar = SnackBar(content: Text(e.toString()));
       // ignore: use_build_context_synchronously
