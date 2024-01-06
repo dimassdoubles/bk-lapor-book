@@ -23,6 +23,7 @@ class _LikeButtonState extends State<LikeButton> {
 
   void checkIfUserLiked() {
     // mendapatkan daftar like
+    
     // cari like yang userId dan loperanId nya sesuai
     // jika ditemukan like yang sesuai ubah liked => true
   }
@@ -46,6 +47,11 @@ class _LikeButtonState extends State<LikeButton> {
       }).catchError((e) {
         throw e;
       });
+
+      // hilangkan tombol like
+      // setState(() {
+      //   liked = true;
+      // });
     } catch (e) {
       final snackbar = SnackBar(content: Text(e.toString()));
       // ignore: use_build_context_synchronously
