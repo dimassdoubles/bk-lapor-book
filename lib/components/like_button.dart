@@ -21,9 +21,27 @@ class _LikeButtonState extends State<LikeButton> {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void checkIfUserLiked() {
+  void checkIfUserLiked() async {
+    debugPrint("check status like");
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection(colletionName)
+          .where('laporanId', isEqualTo: widget._laporan.docId)
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        // ubah status like user
+        debugPrint("laporan sudah kamu like");
+        setState(() {
+          liked = true;
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
     // mendapatkan daftar like
-    
+
     // cari like yang userId dan loperanId nya sesuai
     // jika ditemukan like yang sesuai ubah liked => true
   }
